@@ -25,7 +25,13 @@ const STAFF_PREFIXES = [
   "/course-admin",
   "/leads",
 ];
-const STUDENT_PREFIXES = ["/dashboard", "/schedule", "/progress", "/learn"];
+const STUDENT_PREFIXES = [
+  "/dashboard",
+  "/schedule",
+  "/progress",
+  "/learn",
+  "/certificate",
+];
 const PUBLIC_PREFIXES = ["/login", "/courses", "/school"];
 
 export async function updateSession(request: NextRequest) {

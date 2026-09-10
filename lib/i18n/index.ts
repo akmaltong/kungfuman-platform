@@ -5,6 +5,7 @@ export type Locale = "ru" | "tg" | "en";
 
 export const DEFAULT_LOCALE: Locale = "ru";
 export const SUPPORTED_LOCALES: readonly Locale[] = ["ru", "tg", "en"] as const;
+export const LOCALE_COOKIE = "locale";
 
 /** Локализованное значение из JSONB-колонки. */
 export type Localized = Partial<Record<Locale, string>>;

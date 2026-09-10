@@ -2,8 +2,10 @@ import Link from "next/link";
 
 import { getPublicCourse } from "@/lib/queries/courses";
 import { t } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n/server";
 import { formatMoney } from "@/lib/domain/billing";
 import { PreviewPlayer } from "@/components/preview-player";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +15,10 @@ export default async function CoursePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const course = await getPublicCourse(slug);
+  const [course, locale] = await Promise.all([
+    getPublicCourse(slug),
+    getLocale(),
+  ]);
 
   if (!course) {
     return (
@@ -36,17 +41,20 @@ export default async function CoursePage({
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
+      <div className="mb-4 flex justify-end">
+        <LocaleSwitcher current={locale} />
+      </div>
       <Link href="/courses" className="text-sm text-gold hover:underline">
         ← Все курсы
       </Link>
-      <h1 className="mt-3 text-4xl font-semibold text-gold">{t(course.title)}</h1>
-      <p className="mt-3 text-neutral-300">{t(course.description)}</p>
+      <h1 className="mt-3 text-4xl font-semibold text-gold">{t(course.title, locale)}</h1>
+      <p className="mt-3 text-neutral-300">{t(course.description, locale)}</p>
 
       {/* Превью */}
       {firstPreview && (
         <div className="mt-8">
           <div className="mb-2 text-sm text-neutral-400">
-            Бесплатный урок: {t(firstPreview.title)}
+            Бесплатный урок: {t(firstPreview.title, locale)}
           </div>
           <PreviewPlayer lessonId={firstPreview.id} />
         </div>
@@ -76,7 +84,7 @@ export default async function CoursePage({
         <div className="mt-4 space-y-5">
           {course.modules.map((m) => (
             <div key={m.id}>
-              <div className="text-sm font-semibold text-gold">{t(m.title)}</div>
+              <div className="text-sm font-semibold text-gold">{t(m.title, locale)}</div>
               <ul className="mt-2 space-y-1">
                 {m.lessons.map((l) => (
                   <li
@@ -86,7 +94,7 @@ export default async function CoursePage({
                     <span className={l.is_preview ? "text-gold" : "text-neutral-600"}>
                       {l.is_preview ? "▶" : "🔒"}
                     </span>
-                    {t(l.title)}
+                    {t(l.title, locale)}
                     {l.duration_min && (
                       <span className="text-xs text-neutral-600">
                         · {l.duration_min} мин

@@ -39,3 +39,48 @@ export function formatMoney(amountMinor: number, currency: string): string {
   }).format(major);
   return `${formatted} ${currency}`;
 }
+
+/**
+ * Сколько дней до даты (в днях, по датам без времени). Отрицательное — дата в
+ * прошлом. null, если даты нет.
+ */
+export function daysUntil(
+  dateIso: string | null,
+  from: Date = new Date(),
+): number | null {
+  if (!dateIso) return null;
+  const day = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  const target = new Date(dateIso + "T00:00:00Z");
+  return Math.round((day(target) - day(from)) / 86_400_000);
+}
+
+/**
+ * Заканчивается ли активный абонемент в ближайшие `days` дней (включая сегодня).
+ * Безлимитный по датам (ends_at = null) — не «заканчивается».
+ */
+export function isExpiringWithin(
+  sub: SubscriptionLike,
+  days: number,
+  from: Date = new Date(),
+): boolean {
+  if (!isSubscriptionActive(sub, from)) return false;
+  const left = daysUntil(sub.ends_at, from);
+  return left !== null && left >= 0 && left <= days;
+}
+
+/**
+ * Сборка CSV из строк. Значения экранируются по RFC 4180 (кавычки, запятые,
+ * переводы строк). Первая строка — заголовки.
+ */
+export function toCsv(
+  rows: Record<string, string | number | null>[],
+  headers: { key: string; label: string }[],
+): string {
+  const esc = (v: string | number | null): string => {
+    const s = v === null || v === undefined ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const head = headers.map((h) => esc(h.label)).join(",");
+  const body = rows.map((r) => headers.map((h) => esc(r[h.key])).join(","));
+  return [head, ...body].join("\r\n");
+}

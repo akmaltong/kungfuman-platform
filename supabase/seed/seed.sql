@@ -30,6 +30,17 @@ insert into disciplines (school_id, code, title, sort_order) values
    '{"ru":"Нэйгун","tg":"Нейгун","en":"Neigong"}', 4)
 on conflict (school_id, code) do nothing;
 
+-- Вторая школа (Москва) — для проверки изоляции данных между тенантами (этап 7).
+-- Своя валюта, локали и часовой пояс. Наполнение — по мере надобности.
+insert into schools (id, slug, name, country_code, currency, default_locale, locales, timezone)
+values (
+  '00000000-0000-0000-0000-000000000002',
+  'moscow',
+  '{"ru":"Москва","en":"Moscow"}',
+  'RU', 'RUB', 'ru', '{ru,en}', 'Europe/Moscow'
+)
+on conflict (slug) do nothing;
+
 -- 7 уровней в каждой дисциплине
 insert into levels (discipline_id, number, title)
 select d.id,

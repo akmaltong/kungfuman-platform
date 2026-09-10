@@ -13,10 +13,13 @@ import type { Database } from "@/lib/types/database";
 // Пути route-групп (student)/(staff) не видны в URL, поэтому логические
 // префиксы фиксируем здесь явными путями.
 const STAFF_PREFIXES = [
+  "/overview",
   "/students",
   "/groups",
   "/sessions",
   "/attendance",
+  "/venues",
+  "/products",
   "/payments",
   "/curriculum",
   "/leads",
@@ -91,7 +94,7 @@ export async function updateSession(request: NextRequest) {
     }
     if (isStudentArea && isStaff) {
       const url = request.nextUrl.clone();
-      url.pathname = "/students";
+      url.pathname = "/overview";
       return NextResponse.redirect(url);
     }
   }

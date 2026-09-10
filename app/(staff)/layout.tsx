@@ -8,6 +8,7 @@ const NAV = [
   { href: "/groups", label: "Группы" },
   { href: "/sessions", label: "Занятия" },
   { href: "/curriculum", label: "Методика" },
+  { href: "/course-admin", label: "Курсы" },
   { href: "/venues", label: "Площадки" },
   { href: "/products", label: "Продукты" },
   { href: "/payments", label: "Платежи" },

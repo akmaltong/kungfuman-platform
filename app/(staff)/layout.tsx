@@ -11,6 +11,7 @@ const NAV = [
   { href: "/venues", label: "Площадки" },
   { href: "/products", label: "Продукты" },
   { href: "/payments", label: "Платежи" },
+  { href: "/leads", label: "Заявки" },
 ];
 
 export default function StaffLayout({

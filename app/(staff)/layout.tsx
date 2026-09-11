@@ -9,6 +9,7 @@ const NAV = [
   { href: "/sessions", label: "Занятия" },
   { href: "/curriculum", label: "Методика" },
   { href: "/course-admin", label: "Курсы" },
+  { href: "/blog-admin", label: "Блог" },
   { href: "/venues", label: "Площадки" },
   { href: "/products", label: "Продукты" },
   { href: "/payments", label: "Платежи" },

@@ -23,6 +23,7 @@ const STAFF_PREFIXES = [
   "/payments",
   "/curriculum",
   "/course-admin",
+  "/blog-admin",
   "/leads",
 ];
 const STUDENT_PREFIXES = [

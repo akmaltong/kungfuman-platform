@@ -30,10 +30,24 @@ export default function HomePage() {
           Программа
         </Link>
         <Link
+          href="/free"
+          className="rounded-md border border-ink-muted px-5 py-2.5 text-neutral-200 hover:border-gold/50"
+        >
+          Бесплатные уроки
+        </Link>
+        <Link
           href="/login"
           className="rounded-md border border-ink-muted px-5 py-2.5 text-neutral-200 hover:border-gold/50"
         >
           Вход
+        </Link>
+      </div>
+      <div className="mt-6 flex gap-5 text-sm text-neutral-500">
+        <Link href="/courses" className="hover:text-gold">
+          Онлайн-курсы
+        </Link>
+        <Link href="/blog" className="hover:text-gold">
+          Блог
         </Link>
       </div>
     </main>

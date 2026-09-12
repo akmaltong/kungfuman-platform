@@ -26,6 +26,78 @@ export interface PublicCourse {
   price: { amount_minor: number; currency: string } | null;
 }
 
+export interface FreeLesson {
+  lessonId: string;
+  title: Localized;
+  duration_min: number | null;
+  courseSlug: string;
+  courseTitle: Localized;
+}
+
+// Все превью-уроки опубликованных курсов — витрина «Бесплатные уроки».
+// Читается server-side admin-клиентом; воспроизведение превью открыто анонимам
+// (RLS + /api/media/sign).
+export async function getFreeLessons(): Promise<FreeLesson[]> {
+  let admin: SupabaseClient;
+  try {
+    admin = createAdminClient() as unknown as SupabaseClient;
+  } catch {
+    return [];
+  }
+
+  const { data: courses } = await admin
+    .from("courses")
+    .select("id, slug, title")
+    .eq("status", "published");
+  const courseList = (courses ?? []) as {
+    id: string;
+    slug: string;
+    title: Localized;
+  }[];
+  if (courseList.length === 0) return [];
+
+  const { data: modules } = await admin
+    .from("course_modules")
+    .select("id, course_id")
+    .in(
+      "course_id",
+      courseList.map((c) => c.id),
+    );
+  const moduleList = (modules ?? []) as { id: string; course_id: string }[];
+  if (moduleList.length === 0) return [];
+  const courseByModule = new Map(moduleList.map((m) => [m.id, m.course_id]));
+
+  const { data: lessons } = await admin
+    .from("lessons")
+    .select("id, module_id, title, duration_min, sort_order, is_preview")
+    .eq("is_preview", true)
+    .in(
+      "module_id",
+      moduleList.map((m) => m.id),
+    );
+
+  const courseById = new Map(courseList.map((c) => [c.id, c]));
+  return ((lessons ?? []) as {
+    id: string;
+    module_id: string;
+    title: Localized;
+    duration_min: number | null;
+  }[]).flatMap((l) => {
+    const courseId = courseByModule.get(l.module_id);
+    const course = courseId ? courseById.get(courseId) : undefined;
+    if (!course) return [];
+    return [
+      {
+        lessonId: l.id,
+        title: l.title,
+        duration_min: l.duration_min,
+        courseSlug: course.slug,
+        courseTitle: course.title,
+      },
+    ];
+  });
+}
+
 // Полная витрина опубликованного курса (включая «закрытые» уроки — только
 // заголовки и флаг превью). Читается server-side admin-клиентом, чтобы показать
 // программу целиком; воспроизведение по-прежнему только для превью или после

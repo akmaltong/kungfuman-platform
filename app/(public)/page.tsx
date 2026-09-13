@@ -7,7 +7,7 @@ export default function HomePage() {
   const title = t({ ru: "Академия Kungfuman" });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-6 py-16 text-center">
       <span className="mb-4 text-sm uppercase tracking-[0.3em] text-gold">
         Худжанд
       </span>
@@ -41,12 +41,16 @@ export default function HomePage() {
         >
           Вход
         </Link>
-      </div>
-      <div className="mt-6 flex gap-5 text-sm text-neutral-500">
-        <Link href="/courses" className="hover:text-gold">
+        <Link
+          href="/courses"
+          className="rounded-md border border-ink-muted px-5 py-2.5 text-neutral-200 hover:border-gold/50"
+        >
           Онлайн-курсы
         </Link>
-        <Link href="/blog" className="hover:text-gold">
+        <Link
+          href="/blog"
+          className="rounded-md border border-ink-muted px-5 py-2.5 text-neutral-200 hover:border-gold/50"
+        >
           Блог
         </Link>
       </div>

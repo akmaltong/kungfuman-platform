@@ -67,9 +67,12 @@ function LoginForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
       <div className="text-center">
-        <div className="text-sm uppercase tracking-[0.3em] text-gold">
+        <a
+          href="/"
+          className="text-sm uppercase tracking-[0.3em] text-gold hover:text-gold-soft"
+        >
           Академия Kungfuman
-        </div>
+        </a>
         <h1 className="mt-2 text-2xl font-semibold text-neutral-100">Вход</h1>
       </div>
 
@@ -146,6 +149,11 @@ function LoginForm() {
         Впервые у нас?{" "}
         <a href="/trial" className="text-gold hover:underline">
           Записаться на пробное
+        </a>
+      </p>
+      <p className="mt-3 text-center text-sm">
+        <a href="/" className="text-neutral-500 hover:text-gold">
+          ← На главную
         </a>
       </p>
     </main>

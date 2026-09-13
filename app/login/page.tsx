@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type Method = "phone" | "email";
-type Step = "request" | "verify";
+type Step = "request" | "verify" | "sent";
 
 export default function LoginPage() {
   return (
@@ -40,10 +40,19 @@ function LoginForm() {
     const { error } =
       method === "phone"
         ? await supabase.auth.signInWithOtp({ phone: contact })
-        : await supabase.auth.signInWithOtp({ email: contact });
+        : await supabase.auth.signInWithOtp({
+            email: contact,
+            options: {
+              emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+            },
+          });
     setBusy(false);
-    if (error) setError(error.message);
-    else setStep("verify");
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    // Телефон — ввод кода из SMS; email — переход по ссылке из письма.
+    setStep(method === "phone" ? "verify" : "sent");
   }
 
   async function verifyCode(e: React.FormEvent) {
@@ -67,9 +76,12 @@ function LoginForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
       <div className="text-center">
-        <div className="text-sm uppercase tracking-[0.3em] text-gold">
+        <a
+          href="/"
+          className="text-sm uppercase tracking-[0.3em] text-gold hover:text-gold-soft"
+        >
           Академия Kungfuman
-        </div>
+        </a>
         <h1 className="mt-2 text-2xl font-semibold text-neutral-100">Вход</h1>
       </div>
 
@@ -109,10 +121,14 @@ function LoginForm() {
               required
             />
             <Button type="submit" className="w-full py-2.5" disabled={busy}>
-              {busy ? "Отправляем…" : "Получить код"}
+              {busy
+                ? "Отправляем…"
+                : method === "phone"
+                  ? "Получить код"
+                  : "Получить ссылку"}
             </Button>
           </form>
-        ) : (
+        ) : step === "verify" ? (
           <form onSubmit={verifyCode} className="space-y-3">
             <p className="text-sm text-neutral-400">
               Код отправлен на {contact}
@@ -137,6 +153,27 @@ function LoginForm() {
               Изменить {method === "phone" ? "номер" : "email"}
             </button>
           </form>
+        ) : (
+          <div className="space-y-3 text-center">
+            <p className="text-sm text-neutral-300">
+              Ссылка для входа отправлена на{" "}
+              <span className="text-neutral-100">{contact}</span>.
+            </p>
+            <p className="text-sm text-neutral-400">
+              Откройте письмо и нажмите «Sign in» — вход произойдёт
+              автоматически. Если письма нет, проверьте «Спам».
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setStep("request");
+                setError(null);
+              }}
+              className="w-full text-center text-sm text-neutral-500 hover:text-neutral-300"
+            >
+              Изменить email
+            </button>
+          </div>
         )}
 
         {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
@@ -146,6 +183,11 @@ function LoginForm() {
         Впервые у нас?{" "}
         <a href="/trial" className="text-gold hover:underline">
           Записаться на пробное
+        </a>
+      </p>
+      <p className="mt-3 text-center text-sm">
+        <a href="/" className="text-neutral-500 hover:text-gold">
+          ← На главную
         </a>
       </p>
     </main>

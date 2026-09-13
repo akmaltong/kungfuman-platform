@@ -23,12 +23,20 @@ export default async function BlogPost({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  // Slug может быть кириллическим и прийти из URL percent-кодированным —
+  // декодируем, чтобы совпало со значением в БД.
+  let decodedSlug = slug;
+  try {
+    decodedSlug = decodeURIComponent(slug);
+  } catch {
+    // оставляем как есть, если строка не является валидным %-кодом
+  }
   const supabase = (await createClient()) as unknown as SupabaseClient;
   const [{ data }, locale] = await Promise.all([
     supabase
       .from("posts")
       .select("slug, title, body, cover_url, published_at")
-      .eq("slug", slug)
+      .eq("slug", decodedSlug)
       .eq("status", "published")
       .maybeSingle(),
     getLocale(),

@@ -46,8 +46,17 @@ export default async function BlogIndex() {
             <Link
               key={p.slug}
               href={`/blog/${p.slug}`}
-              className="block rounded-lg border border-ink-muted bg-ink-soft p-6 hover:border-gold/40"
+              className="block overflow-hidden rounded-lg border border-ink-muted bg-ink-soft hover:border-gold/40"
             >
+              {p.cover_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={p.cover_url}
+                  alt=""
+                  className="h-44 w-full border-b border-ink-muted object-cover"
+                />
+              )}
+              <div className="p-6">
               {p.published_at && (
                 <div className="text-xs text-neutral-500">
                   {formatDateTime(p.published_at)}
@@ -61,6 +70,7 @@ export default async function BlogIndex() {
                   {t(p.excerpt, locale)}
                 </p>
               )}
+              </div>
             </Link>
           ))}
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
 import { Markdown } from "@/components/markdown";
 import { createClient } from "@/lib/supabase/client";
@@ -56,6 +56,7 @@ export function PostForm({
   const [preview, setPreview] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [saveState, formAction, saving] = useActionState(updatePost, null);
 
   async function handleUpload(
     file: File | undefined,
@@ -80,7 +81,7 @@ export function PostForm({
   }
 
   return (
-    <form action={updatePost} className="mt-6 space-y-4">
+    <form action={formAction} className="mt-6 space-y-4">
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="cover_url" value={cover} />
       {LANGS.map((l) => (
@@ -213,14 +214,23 @@ export function PostForm({
         <MarkdownHint />
       </div>
 
-      {err && <p className="text-sm text-red-400">{err}</p>}
+      {err && <p className="text-sm text-red-400">Загрузка: {err}</p>}
 
-      <button
-        type="submit"
-        className="rounded-md bg-gold px-5 py-2.5 font-medium text-ink hover:bg-gold-soft"
-      >
-        Сохранить
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-md bg-gold px-5 py-2.5 font-medium text-ink hover:bg-gold-soft disabled:opacity-60"
+        >
+          {saving ? "Сохранение…" : "Сохранить"}
+        </button>
+        {!saving && saveState?.ok && (
+          <span className="text-sm text-green-400">Сохранено ✓</span>
+        )}
+        {!saving && saveState && !saveState.ok && (
+          <span className="text-sm text-red-400">{saveState.error}</span>
+        )}
+      </div>
     </form>
   );
 }

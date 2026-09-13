@@ -45,13 +45,18 @@ export async function createPost(formData: FormData) {
   revalidatePath(LIST);
 }
 
-export async function updatePost(formData: FormData) {
+export type SaveState = { ok: boolean; error?: string } | null;
+
+export async function updatePost(
+  _prev: SaveState,
+  formData: FormData,
+): Promise<SaveState> {
   const { supabase } = await requireUser();
   const id = String(formData.get("id"));
   const title = localized(formData, "title");
-  if (!id || !title.ru) return;
+  if (!id || !title.ru) return { ok: false, error: "Нужен заголовок (RU)." };
 
-  await supabase
+  const { error } = await supabase
     .from("posts")
     .update({
       title,
@@ -60,8 +65,11 @@ export async function updatePost(formData: FormData) {
       cover_url: String(formData.get("cover_url") ?? "").trim() || null,
     })
     .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
   revalidatePath(LIST);
   revalidatePath(editor(id));
+  return { ok: true };
 }
 
 export async function setPostStatus(formData: FormData) {

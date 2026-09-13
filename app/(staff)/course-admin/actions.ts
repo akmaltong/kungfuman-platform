@@ -9,6 +9,46 @@ function editor(courseId: string) {
   return `/course-admin/${courseId}`;
 }
 
+// {ru,tg,en} из title_ru/title_tg/title_en; пустые локали опускаются.
+function localizedTitle(formData: FormData): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const l of ["ru", "tg", "en"] as const) {
+    const v = String(formData.get(`title_${l}`) ?? "").trim();
+    if (v) out[l] = v;
+  }
+  return out;
+}
+
+// --- Переименование (ru/tg/en) ------------------------------------------------
+
+export async function updateCourseTitle(formData: FormData) {
+  const { supabase } = await requireUser();
+  const id = String(formData.get("id"));
+  const title = localizedTitle(formData);
+  if (!id || !title.ru) return;
+  await supabase.from("courses").update({ title }).eq("id", id);
+  revalidatePath(LIST);
+  revalidatePath(editor(id));
+}
+
+export async function updateModuleTitle(formData: FormData) {
+  const { supabase } = await requireUser();
+  const id = String(formData.get("id"));
+  const title = localizedTitle(formData);
+  if (!id || !title.ru) return;
+  await supabase.from("course_modules").update({ title }).eq("id", id);
+  revalidatePath(editor(String(formData.get("course_id"))));
+}
+
+export async function updateLessonTitle(formData: FormData) {
+  const { supabase } = await requireUser();
+  const id = String(formData.get("id"));
+  const title = localizedTitle(formData);
+  if (!id || !title.ru) return;
+  await supabase.from("lessons").update({ title }).eq("id", id);
+  revalidatePath(editor(String(formData.get("course_id"))));
+}
+
 // --- Медиа-ассеты (видео у провайдера) ---------------------------------------
 
 const PROVIDERS = ["kinescope", "vk_video", "bunny", "youtube", "supabase"];

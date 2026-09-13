@@ -39,6 +39,54 @@ function ru(value: FormDataEntryValue | null): { ru: string } {
   return { ru: String(value ?? "").trim() };
 }
 
+// {ru,tg,en} из title_ru/title_tg/title_en; пустые локали опускаются.
+function localizedTitle(formData: FormData): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const l of ["ru", "tg", "en"] as const) {
+    const v = String(formData.get(`title_${l}`) ?? "").trim();
+    if (v) out[l] = v;
+  }
+  return out;
+}
+
+// --- Переименование (ru/tg/en) ------------------------------------------------
+
+export async function updateDiscipline(formData: FormData) {
+  const { supabase } = await ctx();
+  const id = String(formData.get("id"));
+  const title = localizedTitle(formData);
+  if (!id || !title.ru) return;
+  await supabase.from("disciplines").update({ title }).eq("id", id);
+  revalidatePath(PATH);
+}
+
+export async function updateLevel(formData: FormData) {
+  const { supabase } = await ctx();
+  const id = String(formData.get("id"));
+  const title = localizedTitle(formData);
+  if (!id || !title.ru) return;
+  await supabase.from("levels").update({ title }).eq("id", id);
+  revalidatePath(PATH);
+}
+
+export async function updatePractice(formData: FormData) {
+  const { supabase } = await ctx();
+  const id = String(formData.get("id"));
+  const title = localizedTitle(formData);
+  if (!id || !title.ru) return;
+  await supabase.from("practices").update({ title }).eq("id", id);
+  revalidatePath(PATH);
+}
+
+export async function updateCriterion(formData: FormData) {
+  const { supabase } = await ctx();
+  const id = String(formData.get("id"));
+  const title = localizedTitle(formData);
+  if (!id || !title.ru) return;
+  await supabase.from("practice_criteria").update({ title }).eq("id", id);
+  revalidatePath(PATH);
+}
+
 // --- Дисциплины ---------------------------------------------------------------
 
 export async function createDiscipline(formData: FormData) {

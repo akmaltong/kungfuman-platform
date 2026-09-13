@@ -1,7 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
-import { t } from "@/lib/i18n";
 import {
   buildCurriculumTree,
   type DisciplineRow,
@@ -10,6 +9,7 @@ import {
 } from "@/lib/domain/curriculum";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EditableTitle } from "@/components/editable-title";
 import {
   createCriterion,
   createDiscipline,
@@ -21,6 +21,10 @@ import {
   deletePractice,
   movePractice,
   setPracticeStatus,
+  updateCriterion,
+  updateDiscipline,
+  updateLevel,
+  updatePractice,
 } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -95,7 +99,11 @@ export default async function CurriculumPage() {
           >
             <header className="flex items-center justify-between gap-3 border-b border-ink-muted px-4 py-3">
               <h2 className="text-xl font-semibold text-neutral-100">
-                {t(discipline.title)}
+                <EditableTitle
+                  id={discipline.id}
+                  value={discipline.title}
+                  action={updateDiscipline}
+                />
               </h2>
               <form action={deleteDiscipline}>
                 <input type="hidden" name="id" value={discipline.id} />
@@ -145,7 +153,11 @@ export default async function CurriculumPage() {
                       <span className="mr-2 text-sm font-semibold text-gold">
                         Уровень {level.number}
                       </span>
-                      {t(level.title)}
+                      <EditableTitle
+                        id={level.id}
+                        value={level.title}
+                        action={updateLevel}
+                      />
                     </h3>
                     <form action={deleteLevel}>
                       <input type="hidden" name="id" value={level.id} />
@@ -164,7 +176,11 @@ export default async function CurriculumPage() {
                       >
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="text-neutral-200">
-                            {t(practice.title)}
+                            <EditableTitle
+                              id={practice.id}
+                              value={practice.title}
+                              action={updatePractice}
+                            />
                           </span>
                           <span className="rounded-full border border-gold/30 px-2 py-0.5 text-xs text-neutral-400">
                             {practice.status}
@@ -227,7 +243,14 @@ export default async function CurriculumPage() {
                                 key={c.id}
                                 className="flex items-center gap-2 text-sm text-neutral-400"
                               >
-                                <span>• {t(c.title)}</span>
+                                <span className="inline-flex items-center gap-1">
+                                  •{" "}
+                                  <EditableTitle
+                                    id={c.id}
+                                    value={c.title}
+                                    action={updateCriterion}
+                                  />
+                                </span>
                                 <span className="text-xs text-neutral-600">
                                   (вес {c.weight})
                                 </span>

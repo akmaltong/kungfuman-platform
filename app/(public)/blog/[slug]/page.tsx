@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { t, type Localized } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
 import { formatDateTime } from "@/lib/format";
+import { Markdown } from "@/components/markdown";
 
 export const dynamic = "force-dynamic";
 
@@ -44,10 +45,7 @@ export default async function BlogPost({
     );
   }
   const post = data as Post;
-  const paragraphs = t(post.body, locale)
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+  const body = t(post.body, locale).trim();
 
   return (
     <article className="mx-auto max-w-2xl px-6 py-16">
@@ -70,9 +68,9 @@ export default async function BlogPost({
           className="mt-6 w-full rounded-lg border border-ink-muted"
         />
       )}
-      <div className="mt-8 space-y-4 text-neutral-200 leading-relaxed">
-        {paragraphs.length > 0 ? (
-          paragraphs.map((p, i) => <p key={i}>{p}</p>)
+      <div className="mt-8">
+        {body ? (
+          <Markdown>{body}</Markdown>
         ) : (
           <p className="text-neutral-500">Текст статьи пока пуст.</p>
         )}

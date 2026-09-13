@@ -6,12 +6,16 @@ import { t, type Localized } from "@/lib/i18n";
 import { bySortOrder } from "@/lib/domain/curriculum";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EditableTitle } from "@/components/editable-title";
 import {
   createLesson,
   createModule,
   deleteLesson,
   deleteModule,
   toggleLessonPreview,
+  updateCourseTitle,
+  updateLessonTitle,
+  updateModuleTitle,
 } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -112,7 +116,11 @@ export default async function CourseEditor({
         ← Курсы
       </Link>
       <h1 className="mt-2 text-3xl font-semibold text-neutral-100">
-        {t(course.title)}
+        <EditableTitle
+          id={course.id}
+          value={course.title}
+          action={updateCourseTitle}
+        />
       </h1>
       <p className="mt-1 text-sm text-neutral-500">
         /{course.slug} · {course.status}
@@ -136,7 +144,14 @@ export default async function CourseEditor({
               className="rounded-lg border border-ink-muted bg-ink-soft p-4"
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-lg text-neutral-100">{t(module.title)}</h2>
+                <h2 className="text-lg text-neutral-100">
+                  <EditableTitle
+                    id={module.id}
+                    value={module.title}
+                    action={updateModuleTitle}
+                    extra={{ course_id: course.id }}
+                  />
+                </h2>
                 <form action={deleteModule}>
                   <input type="hidden" name="id" value={module.id} />
                   <input type="hidden" name="course_id" value={course.id} />
@@ -152,7 +167,13 @@ export default async function CourseEditor({
                     key={lesson.id}
                     className="flex flex-wrap items-center gap-2 rounded border border-ink-muted p-2"
                   >
-                    <span className="text-neutral-200">{t(lesson.title)}</span>
+                    <EditableTitle
+                      id={lesson.id}
+                      value={lesson.title}
+                      action={updateLessonTitle}
+                      extra={{ course_id: course.id }}
+                      className="text-neutral-200"
+                    />
                     {lesson.is_preview && (
                       <span className="rounded-full border border-gold/30 px-2 py-0.5 text-xs text-gold">
                         превью

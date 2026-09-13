@@ -9,6 +9,17 @@ function editor(id: string) {
   return `/blog-admin/${id}`;
 }
 
+// Собирает JSONB {ru,tg,en} из полей formData вида `<prefix>_ru` и т.д.
+// Пустые локали НЕ включаются — иначе t() покажет пусто вместо фолбэка на ru.
+function localized(formData: FormData, prefix: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const l of ["ru", "tg", "en"] as const) {
+    const v = String(formData.get(`${prefix}_${l}`) ?? "").trim();
+    if (v) out[l] = v;
+  }
+  return out;
+}
+
 function slugify(input: string): string {
   return input
     .toLowerCase()
@@ -37,15 +48,15 @@ export async function createPost(formData: FormData) {
 export async function updatePost(formData: FormData) {
   const { supabase } = await requireUser();
   const id = String(formData.get("id"));
-  const titleRu = String(formData.get("title_ru") ?? "").trim();
-  if (!id || !titleRu) return;
+  const title = localized(formData, "title");
+  if (!id || !title.ru) return;
 
   await supabase
     .from("posts")
     .update({
-      title: { ru: titleRu },
-      excerpt: { ru: String(formData.get("excerpt_ru") ?? "").trim() },
-      body: { ru: String(formData.get("body_ru") ?? "") },
+      title,
+      excerpt: localized(formData, "excerpt"),
+      body: localized(formData, "body"),
       cover_url: String(formData.get("cover_url") ?? "").trim() || null,
     })
     .eq("id", id);

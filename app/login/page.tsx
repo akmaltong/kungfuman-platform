@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
@@ -76,12 +77,12 @@ function LoginForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
       <div className="text-center">
-        <a
+        <Link
           href="/"
           className="text-sm uppercase tracking-[0.3em] text-gold hover:text-gold-soft"
         >
           Академия Kungfuman
-        </a>
+        </Link>
         <h1 className="mt-2 text-2xl font-semibold text-neutral-100">Вход</h1>
       </div>
 
@@ -181,14 +182,14 @@ function LoginForm() {
 
       <p className="mt-6 text-center text-sm text-neutral-500">
         Впервые у нас?{" "}
-        <a href="/trial" className="text-gold hover:underline">
+        <Link href="/trial" className="text-gold hover:underline">
           Записаться на пробное
-        </a>
+        </Link>
       </p>
       <p className="mt-3 text-center text-sm">
-        <a href="/" className="text-neutral-500 hover:text-gold">
+        <Link href="/" className="text-neutral-500 hover:text-gold">
           ← На главную
-        </a>
+        </Link>
       </p>
     </main>
   );

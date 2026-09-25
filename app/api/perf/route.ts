@@ -1,65 +1,42 @@
 import { NextResponse } from "next/server";
-import dns from "node:dns/promises";
+import dns from "node:dns";
+import { createClient } from "@supabase/supabase-js";
 
-// ВРЕМЕННЫЙ диагностический эндпоинт для замера латентности к Supabase.
-// Удалить после диагностики производительности.
+// ВРЕМЕННЫЙ диагностический эндпоинт латентности Supabase. Удалить после.
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+async function timeSupa(url: string, key: string) {
+  const t = Date.now();
+  const supa = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await supa
+    .from("disciplines")
+    .select("id")
+    .limit(1);
+  return { ms: Date.now() - t, err: error?.message ?? null, rows: data?.length ?? null };
+}
 
 export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const host = new URL(url).hostname;
   const result: Record<string, unknown> = { region: process.env.VERCEL_REGION };
 
-  // 1) DNS
-  let t = Date.now();
-  try {
-    const addrs = await dns.lookup(host, { all: true });
-    result.dns_ms = Date.now() - t;
-    result.dns = addrs;
-  } catch (e) {
-    result.dns_ms = Date.now() - t;
-    result.dns_err = String(e);
-  }
+  // 1) supabase-js с DNS по умолчанию
+  result.default = await timeSupa(url, key);
 
-  const headers = { apikey: key, Authorization: `Bearer ${key}` };
-  const rest = `${url}/rest/v1/disciplines?select=id&limit=1`;
-
-  // 2) первый REST-запрос (включает TLS/коннект)
-  t = Date.now();
+  // 2) supabase-js после переключения DNS на ipv4first
   try {
-    const res = await fetch(rest, { headers, cache: "no-store" });
-    await res.text();
-    result.rest1_ms = Date.now() - t;
-    result.rest1_status = res.status;
+    dns.setDefaultResultOrder("ipv4first");
+    result.dns_order = "ipv4first";
   } catch (e) {
-    result.rest1_ms = Date.now() - t;
-    result.rest1_err = String(e);
+    result.dns_order_err = String(e);
   }
+  result.ipv4first = await timeSupa(url, key);
 
-  // 3) второй REST-запрос (переиспользование соединения)
-  t = Date.now();
-  try {
-    const res = await fetch(rest, { headers, cache: "no-store" });
-    await res.text();
-    result.rest2_ms = Date.now() - t;
-    result.rest2_status = res.status;
-  } catch (e) {
-    result.rest2_ms = Date.now() - t;
-    result.rest2_err = String(e);
-  }
-
-  // 4) auth health (GoTrue)
-  t = Date.now();
-  try {
-    const res = await fetch(`${url}/auth/v1/health`, { headers, cache: "no-store" });
-    await res.text();
-    result.auth_ms = Date.now() - t;
-    result.auth_status = res.status;
-  } catch (e) {
-    result.auth_ms = Date.now() - t;
-    result.auth_err = String(e);
-  }
+  // 3) ещё раз (тёплый)
+  result.ipv4first_2 = await timeSupa(url, key);
 
   return NextResponse.json(result);
 }

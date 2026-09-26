@@ -8,6 +8,7 @@ const NAV = [
   { href: "/prices", label: "Форматы" },
   { href: "/courses", label: "Курсы" },
   { href: "/blog", label: "Блог" },
+  { href: "/association", label: "Ассоциация" },
 ];
 
 export default function PublicLayout({

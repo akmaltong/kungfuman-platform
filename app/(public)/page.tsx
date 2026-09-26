@@ -71,6 +71,11 @@ export default function HomePage() {
           desc="Статьи и заметки школы"
         />
         <NavCard
+          href="/association"
+          title="Ассоциация · АТВИ"
+          desc="Институциональный уровень: миссия, этика, признание преподавателей"
+        />
+        <NavCard
           href="/login"
           title="Вход"
           desc="Личный кабинет ученика и персонала"

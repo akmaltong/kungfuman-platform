@@ -4,9 +4,9 @@ import Link from "next/link";
 // компактная навигация. Узкая колонка, тёплое золото на чёрном.
 const NAV = [
   { href: "/master", label: "Мастер" },
-  { href: "/program", label: "Программа" },
+  { href: "/directions", label: "Направления" },
+  { href: "/prices", label: "Форматы" },
   { href: "/courses", label: "Курсы" },
-  { href: "/free", label: "Уроки" },
   { href: "/blog", label: "Блог" },
 ];
 

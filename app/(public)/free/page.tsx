@@ -5,6 +5,7 @@ import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
 import { PreviewPlayer } from "@/components/preview-player";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { PageHeader } from "@/components/public/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -13,28 +14,27 @@ export default async function FreeLessonsPage() {
   const [lessons, locale] = await Promise.all([getFreeLessons(), getLocale()]);
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <div className="mb-4 flex justify-end">
-        <LocaleSwitcher current={locale} />
-      </div>
-      <span className="text-sm uppercase tracking-[0.3em] text-gold">Худжанд</span>
-      <h1 className="mt-3 text-4xl font-semibold text-gold">Бесплатные уроки</h1>
-      <p className="mt-3 max-w-xl text-neutral-300">
-        Попробуй методику до покупки: открытые уроки из курсов академии.
-      </p>
+    <main className="mx-auto max-w-[680px] px-6 pb-20">
+      <PageHeader
+        title="Бесплатные уроки"
+        subtitle="Попробуй методику до покупки: открытые уроки из курсов академии."
+        aside={<LocaleSwitcher current={locale} />}
+      />
 
       {lessons.length === 0 ? (
-        <p className="mt-10 text-neutral-400">Скоро здесь появятся уроки.</p>
+        <p className="mt-10 text-[16px] text-paper-muted">
+          Скоро здесь появятся уроки.
+        </p>
       ) : (
         <div className="mt-10 space-y-10">
           {lessons.map((l) => (
-            <section key={l.lessonId}>
-              <div className="mb-2 flex items-baseline justify-between gap-3">
-                <h2 className="text-xl font-semibold text-neutral-100">
+            <section key={l.lessonId} className="border-t border-ink-muted pt-8">
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <h2 className="font-serif text-[22px] font-bold text-paper">
                   {t(l.title, locale)}
                 </h2>
                 {l.duration_min && (
-                  <span className="text-xs text-neutral-500">
+                  <span className="shrink-0 text-[13px] text-paper-muted">
                     {l.duration_min} мин
                   </span>
                 )}
@@ -42,7 +42,7 @@ export default async function FreeLessonsPage() {
               <PreviewPlayer lessonId={l.lessonId} />
               <Link
                 href={`/courses/${l.courseSlug}`}
-                className="mt-2 inline-block text-sm text-gold hover:underline"
+                className="mt-3 inline-block text-[15px] text-gold hover:underline"
               >
                 Курс «{t(l.courseTitle, locale)}» →
               </Link>

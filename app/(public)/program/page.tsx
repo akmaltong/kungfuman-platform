@@ -2,6 +2,7 @@ import { getPublicProgram } from "@/lib/queries/curriculum";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { PageHeader } from "@/components/public/page-header";
 
 // Публичная страница программы школы Худжанд — читается без регистрации.
 // Данные тянутся на сервере при каждом запросе.
@@ -14,48 +15,44 @@ export default async function ProgramPage() {
   ]);
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
-      <div className="mb-4 flex justify-end">
-        <LocaleSwitcher current={locale} />
-      </div>
-      <span className="text-sm uppercase tracking-[0.3em] text-gold">
-        Худжанд
-      </span>
-      <h1 className="mt-3 text-4xl font-semibold text-gold">Программа</h1>
-      <p className="mt-4 max-w-2xl text-neutral-300">
-        Семиуровневая методика: дисциплина → уровень → практика. Прогрессия и
-        аттестация на каждом уровне.
-      </p>
+    <main className="mx-auto max-w-[680px] px-6 pb-20">
+      <PageHeader
+        title="Программа"
+        subtitle="Семиуровневая методика школы: дисциплина → уровень → практика. Плавная прогрессия и аттестация на каждом уровне — как ступени мастерства, а не спортивные разряды."
+        aside={<LocaleSwitcher current={locale} />}
+      />
 
       {program.length === 0 ? (
-        <p className="mt-12 rounded-lg border border-ink-muted bg-ink-soft p-6 text-neutral-400">
+        <p className="mt-12 border border-gold-dim bg-ink p-6 text-[16px] text-paper-muted">
           Программа скоро появится здесь.
         </p>
       ) : (
         <div className="mt-12 space-y-12">
           {program.map((discipline) => (
-            <section key={discipline.id}>
-              <h2 className="text-2xl font-semibold text-neutral-100">
+            <section key={discipline.id} className="border-t border-ink-muted pt-8">
+              <h2 className="font-serif text-[26px] font-bold text-gold">
                 {t(discipline.title, locale)}
               </h2>
-              <ol className="mt-6 space-y-4">
+              <ol className="mt-6 space-y-3">
                 {discipline.levels.map((level) => (
                   <li
                     key={level.id}
-                    className="rounded-lg border border-ink-muted bg-ink-soft p-5"
+                    className="border border-gold-dim bg-ink p-5"
                   >
                     <div className="flex items-baseline gap-3">
-                      <span className="text-sm font-semibold text-gold">
+                      <span className="font-serif text-[15px] font-bold text-gold">
                         Уровень {level.number}
                       </span>
-                      <span className="text-neutral-200">{t(level.title, locale)}</span>
+                      <span className="text-[17px] text-paper">
+                        {t(level.title, locale)}
+                      </span>
                     </div>
                     {level.practices.length > 0 && (
                       <ul className="mt-3 flex flex-wrap gap-2">
                         {level.practices.map((practice) => (
                           <li
                             key={practice.id}
-                            className="rounded-full border border-gold/30 px-3 py-1 text-sm text-neutral-300"
+                            className="border border-gold-dim px-3 py-1 text-[14px] text-paper-muted"
                           >
                             {t(practice.title, locale)}
                           </li>

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { t, type Localized } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { PageHeader } from "@/components/public/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -28,27 +29,31 @@ export default async function CoursesIndex() {
   const courses = (data ?? []) as CourseRow[];
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
-      <div className="mb-4 flex justify-end">
-        <LocaleSwitcher current={locale} />
-      </div>
-      <span className="text-sm uppercase tracking-[0.3em] text-gold">Худжанд</span>
-      <h1 className="mt-3 text-4xl font-semibold text-gold">Онлайн-курсы</h1>
+    <main className="mx-auto max-w-[680px] px-6 pb-20">
+      <PageHeader
+        title="Онлайн-курсы"
+        subtitle="Видеокурсы школы: смотри в удобном темпе и отслеживай прогресс."
+        aside={<LocaleSwitcher current={locale} />}
+      />
 
       {courses.length === 0 ? (
-        <p className="mt-10 text-neutral-400">Курсы скоро появятся.</p>
+        <p className="mt-10 text-[16px] text-paper-muted">
+          Курсы скоро появятся.
+        </p>
       ) : (
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           {courses.map((c) => (
             <Link
               key={c.slug}
               href={`/courses/${c.slug}`}
-              className="rounded-lg border border-ink-muted bg-ink-soft p-6 hover:border-gold/40"
+              className="border border-gold-dim bg-ink p-6 transition-colors hover:border-gold hover:bg-ink-lacquer"
             >
-              <h2 className="text-xl font-semibold text-neutral-100">
+              <h2 className="font-serif text-[21px] font-bold text-paper">
                 {t(c.title, locale)}
               </h2>
-              <p className="mt-2 text-sm text-neutral-400">{t(c.description, locale)}</p>
+              <p className="mt-2 text-[15px] leading-[1.55] text-paper-muted">
+                {t(c.description, locale)}
+              </p>
             </Link>
           ))}
         </div>

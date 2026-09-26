@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "PT Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "PT Serif", Georgia, "Times New Roman", serif;
 }
 
 html {
@@ -11,5 +12,5 @@ html {
 }
 
 body {
-  @apply bg-ink text-neutral-100 antialiased;
+  @apply bg-ink font-sans text-paper antialiased;
 }

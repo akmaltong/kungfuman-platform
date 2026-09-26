@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kungfuman-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--config.manage-package-manager-versions=false", "dev"],
+      "port": 3000
+    }
+  ]
+}

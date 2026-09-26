@@ -5,6 +5,7 @@ import Link from "next/link";
 const NAV = [
   { href: "/master", label: "Мастер" },
   { href: "/directions", label: "Направления" },
+  { href: "/timetable", label: "Расписание" },
   { href: "/prices", label: "Форматы" },
   { href: "/courses", label: "Курсы" },
   { href: "/blog", label: "Блог" },

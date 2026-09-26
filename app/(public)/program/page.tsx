@@ -47,6 +47,11 @@ export default async function ProgramPage() {
                         {t(level.title, locale)}
                       </span>
                     </div>
+                    {t(level.goals, locale) && (
+                      <p className="mt-1.5 text-[14px] leading-[1.5] text-paper-muted">
+                        {t(level.goals, locale)}
+                      </p>
+                    )}
                     {level.practices.length > 0 && (
                       <ul className="mt-3 flex flex-wrap gap-2">
                         {level.practices.map((practice) => (

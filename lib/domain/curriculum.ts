@@ -36,6 +36,7 @@ export interface LevelRow {
   discipline_id: string;
   number: number;
   title: Localized;
+  goals?: Localized;
 }
 
 export interface PracticeRow {

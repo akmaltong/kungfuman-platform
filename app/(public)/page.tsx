@@ -36,6 +36,11 @@ export default function HomePage() {
 
       <nav className="grid gap-3.5 border-t border-ink-muted py-9 pb-14">
         <NavCard
+          href="/master"
+          title="О мастере"
+          desc="Акмал Тонг · 28 лет практики, призёр Чемпионата Европы"
+        />
+        <NavCard
           href="/program"
           title="Программа"
           desc="Семиуровневая методика: дисциплина → уровень → практика"

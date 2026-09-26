@@ -3,6 +3,7 @@ import Link from "next/link";
 // Минимальная шапка публичной части в стиле сайта: бренд ведёт на главную,
 // компактная навигация. Узкая колонка, тёплое золото на чёрном.
 const NAV = [
+  { href: "/master", label: "Мастер" },
   { href: "/program", label: "Программа" },
   { href: "/courses", label: "Курсы" },
   { href: "/free", label: "Уроки" },

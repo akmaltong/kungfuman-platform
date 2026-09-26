@@ -1,42 +1,67 @@
 import { NextResponse } from "next/server";
-import dns from "node:dns";
-import { createClient } from "@supabase/supabase-js";
+import dnsp from "node:dns/promises";
 
-// ВРЕМЕННЫЙ диагностический эндпоинт латентности Supabase. Удалить после.
+// ВРЕМЕННЫЙ диагностический эндпоинт связности Vercel → Supabase. Удалить после.
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-async function timeSupa(url: string, key: string) {
+async function timedFetch(u: string, headers?: Record<string, string>) {
   const t = Date.now();
-  const supa = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  const { data, error } = await supa
-    .from("disciplines")
-    .select("id")
-    .limit(1);
-  return { ms: Date.now() - t, err: error?.message ?? null, rows: data?.length ?? null };
+  try {
+    const res = await fetch(u, { cache: "no-store", headers });
+    const body = (await res.text()).slice(0, 60);
+    return { ms: Date.now() - t, status: res.status, body };
+  } catch (e) {
+    const err = e as { message?: string; cause?: { code?: string; errno?: number; message?: string } };
+    return {
+      ms: Date.now() - t,
+      err: err?.message ?? String(e),
+      cause_code: err?.cause?.code,
+      cause_errno: err?.cause?.errno,
+      cause_msg: err?.cause?.message,
+    };
+  }
 }
 
 export async function GET() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const result: Record<string, unknown> = { region: process.env.VERCEL_REGION };
-
-  // 1) supabase-js с DNS по умолчанию
-  result.default = await timeSupa(url, key);
-
-  // 2) supabase-js после переключения DNS на ipv4first
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+  let host = "";
   try {
-    dns.setDefaultResultOrder("ipv4first");
-    result.dns_order = "ipv4first";
-  } catch (e) {
-    result.dns_order_err = String(e);
+    host = new URL(url).hostname;
+  } catch {
+    host = "BAD_URL";
   }
-  result.ipv4first = await timeSupa(url, key);
+  const out: Record<string, unknown> = {
+    region: process.env.VERCEL_REGION,
+    host,
+    url_len: url.length,
+    key_len: key.length,
+  };
 
-  // 3) ещё раз (тёплый)
-  result.ipv4first_2 = await timeSupa(url, key);
+  // DNS-записи хоста Supabase
+  try {
+    out.A = await dnsp.resolve4(host);
+  } catch (e) {
+    out.A_err = String(e);
+  }
+  try {
+    out.AAAA = await dnsp.resolve6(host);
+  } catch (e) {
+    out.AAAA_err = String(e);
+  }
+  try {
+    out.lookup = await dnsp.lookup(host, { all: true });
+  } catch (e) {
+    out.lookup_err = String(e);
+  }
 
-  return NextResponse.json(result);
+  // Контроль: исходящий интернет вообще работает?
+  out.example = await timedFetch("https://example.com");
+  // Supabase health (без авторизации)
+  out.supabase_health = await timedFetch(`${url}/auth/v1/health`, {
+    apikey: key,
+  });
+
+  return NextResponse.json(out);
 }

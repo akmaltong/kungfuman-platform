@@ -51,15 +51,15 @@ function VideoFrame({ src }: { src: string }) {
 
 const components: Components = {
   h1: ({ children }) => (
-    <h2 className="mt-8 text-2xl font-semibold text-neutral-100">{children}</h2>
+    <h2 className="mt-8 font-serif text-[26px] font-bold text-gold">{children}</h2>
   ),
   h2: ({ children }) => (
-    <h2 className="mt-8 text-2xl font-semibold text-neutral-100">{children}</h2>
+    <h2 className="mt-8 font-serif text-[26px] font-bold text-gold">{children}</h2>
   ),
   h3: ({ children }) => (
-    <h3 className="mt-6 text-xl font-semibold text-neutral-100">{children}</h3>
+    <h3 className="mt-6 font-serif text-[21px] font-bold text-paper">{children}</h3>
   ),
-  p: ({ children }) => <p className="leading-relaxed">{children}</p>,
+  p: ({ children }) => <p className="text-[17px] leading-[1.7]">{children}</p>,
   ul: ({ children }) => (
     <ul className="list-disc space-y-1 pl-6">{children}</ul>
   ),
@@ -67,7 +67,7 @@ const components: Components = {
     <ol className="list-decimal space-y-1 pl-6">{children}</ol>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="border-l-2 border-gold/50 pl-4 italic text-neutral-400">
+    <blockquote className="border-l-2 border-gold/50 pl-4 font-serif italic text-paper-muted">
       {children}
     </blockquote>
   ),
@@ -77,7 +77,7 @@ const components: Components = {
     </code>
   ),
   strong: ({ children }) => (
-    <strong className="font-semibold text-neutral-100">{children}</strong>
+    <strong className="font-semibold text-paper">{children}</strong>
   ),
   hr: () => <hr className="border-ink-muted" />,
   img: ({ src, alt }) =>
@@ -108,7 +108,7 @@ const components: Components = {
 
 export function Markdown({ children }: { children: string }) {
   return (
-    <div className="space-y-4 text-neutral-200">
+    <div className="space-y-4 text-paper">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {children}
       </ReactMarkdown>

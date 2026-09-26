@@ -44,8 +44,8 @@ export default async function BlogPost({
 
   if (!data) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-16 text-center">
-        <p className="text-neutral-400">Статья не найдена.</p>
+      <main className="mx-auto max-w-[680px] px-6 py-16 text-center">
+        <p className="text-paper-muted">Статья не найдена.</p>
         <Link href="/blog" className="mt-4 inline-block text-gold hover:underline">
           ← Блог
         </Link>
@@ -56,16 +56,16 @@ export default async function BlogPost({
   const body = t(post.body, locale).trim();
 
   return (
-    <article className="mx-auto max-w-2xl px-6 py-16">
+    <article className="mx-auto max-w-[680px] px-6 pb-20 pt-10">
       <Link href="/blog" className="text-sm text-gold hover:underline">
         ← Блог
       </Link>
       {post.published_at && (
-        <div className="mt-4 text-xs text-neutral-500">
+        <div className="mt-6 text-[13px] text-paper-muted">
           {formatDateTime(post.published_at)}
         </div>
       )}
-      <h1 className="mt-1 text-4xl font-semibold text-gold">
+      <h1 className="mt-1 font-serif text-[36px] font-bold leading-[1.1] text-paper sm:text-[42px]">
         {t(post.title, locale)}
       </h1>
       {post.cover_url && (
@@ -73,14 +73,14 @@ export default async function BlogPost({
         <img
           src={post.cover_url}
           alt=""
-          className="mt-6 w-full rounded-lg border border-ink-muted"
+          className="mt-6 w-full border border-gold-dim object-cover"
         />
       )}
       <div className="mt-8">
         {body ? (
           <Markdown>{body}</Markdown>
         ) : (
-          <p className="text-neutral-500">Текст статьи пока пуст.</p>
+          <p className="text-paper-muted">Текст статьи пока пуст.</p>
         )}
       </div>
     </article>

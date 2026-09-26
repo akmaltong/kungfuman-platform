@@ -75,18 +75,18 @@ function LoginForm() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
+    <main className="mx-auto flex min-h-screen max-w-[400px] flex-col justify-center px-6">
       <div className="text-center">
         <Link
           href="/"
-          className="text-sm uppercase tracking-[0.3em] text-gold hover:text-gold-soft"
+          className="text-[15px] text-gold hover:text-gold-soft"
         >
           Академия Kungfuman
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-neutral-100">Вход</h1>
+        <h1 className="mt-2 font-serif text-[30px] font-bold text-paper">Вход</h1>
       </div>
 
-      <div className="mt-8 rounded-lg border border-ink-muted bg-ink-soft p-6">
+      <div className="mt-8 border border-gold-dim bg-ink p-6">
         {/* Переключатель способа */}
         <div className="mb-4 flex gap-2">
           {(["phone", "email"] as Method[]).map((m) => (
@@ -101,7 +101,7 @@ function LoginForm() {
               className={`flex-1 rounded-md border px-3 py-1.5 text-sm ${
                 method === m
                   ? "border-gold bg-gold text-ink"
-                  : "border-ink-muted text-neutral-300"
+                  : "border-gold-dim text-paper-muted"
               }`}
             >
               {m === "phone" ? "Телефон" : "Email"}
@@ -131,7 +131,7 @@ function LoginForm() {
           </form>
         ) : step === "verify" ? (
           <form onSubmit={verifyCode} className="space-y-3">
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-paper-muted">
               Код отправлен на {contact}
             </p>
             <Input
@@ -149,18 +149,18 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => setStep("request")}
-              className="w-full text-center text-sm text-neutral-500 hover:text-neutral-300"
+              className="w-full text-center text-sm text-paper-muted hover:text-gold"
             >
               Изменить {method === "phone" ? "номер" : "email"}
             </button>
           </form>
         ) : (
           <div className="space-y-3 text-center">
-            <p className="text-sm text-neutral-300">
+            <p className="text-sm text-paper">
               Ссылка для входа отправлена на{" "}
-              <span className="text-neutral-100">{contact}</span>.
+              <span className="text-paper">{contact}</span>.
             </p>
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-paper-muted">
               Откройте письмо и нажмите «Sign in» — вход произойдёт
               автоматически. Если письма нет, проверьте «Спам».
             </p>
@@ -170,7 +170,7 @@ function LoginForm() {
                 setStep("request");
                 setError(null);
               }}
-              className="w-full text-center text-sm text-neutral-500 hover:text-neutral-300"
+              className="w-full text-center text-sm text-paper-muted hover:text-gold"
             >
               Изменить email
             </button>
@@ -180,14 +180,14 @@ function LoginForm() {
         {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
       </div>
 
-      <p className="mt-6 text-center text-sm text-neutral-500">
+      <p className="mt-6 text-center text-sm text-paper-muted">
         Впервые у нас?{" "}
         <Link href="/trial" className="text-gold hover:underline">
           Записаться на пробное
         </Link>
       </p>
       <p className="mt-3 text-center text-sm">
-        <Link href="/" className="text-neutral-500 hover:text-gold">
+        <Link href="/" className="text-paper-muted hover:text-gold">
           ← На главную
         </Link>
       </p>

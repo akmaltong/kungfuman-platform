@@ -1,6 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 
+import { getContent } from "@/lib/queries/site-content";
+
+// Часть текстов редактируется в кабинете (раздел «Сайт» → «Ассоциация»);
+// структурные блоки (перечни, статусы, кодекс, архитектура) — в коде.
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Ассоциация традиционных и внутренних искусств · АТВИ",
   description:
@@ -29,7 +35,12 @@ function H2({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AssociationPage() {
+export default async function AssociationPage() {
+  const c = await getContent("khujand", "association");
+  const founderText = c.founderText
+    .split(/\n\s*\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
   return (
     <main className="mx-auto max-w-[760px] px-6 pb-24">
       {/* Hero */}
@@ -41,15 +52,13 @@ export default function AssociationPage() {
           會
         </div>
         <p className="mb-4 text-[12px] uppercase tracking-[0.32em] text-gold-dim">
-          Институциональный уровень
+          {c.eyebrow}
         </p>
         <h1 className="mx-auto max-w-[16em] font-serif text-[34px] font-bold leading-[1.12] text-paper sm:text-[42px]">
-          Ассоциация традиционных и внутренних искусств
+          {c.title}
         </h1>
         <p className="mx-auto mt-5 max-w-[34em] text-[16px] leading-[1.6] text-paper-muted">
-          Светская некоммерческая инициатива по сохранению, систематизации и
-          передаче традиционных и внутренних искусств, культуры движения,
-          дыхания и телесной структуры в Республике Таджикистан.
+          {c.subtitle}
         </p>
         <p className="mx-auto mt-4 max-w-[30em] text-[13px] tracking-wide text-gold-dim">
           Рабочее сокращение — АТВИ · Association of Traditional &amp; Internal
@@ -59,10 +68,7 @@ export default function AssociationPage() {
 
       {/* Статус проекта — честная оговорка */}
       <div className="mx-auto mt-12 max-w-[36em] border-l-[3px] border-gold-dim bg-ink-lacquer px-5 py-4 text-[14px] leading-[1.6] text-paper-muted">
-        Это проект и концепция в стадии подготовки. На данном этапе Ассоциация
-        не является зарегистрированной организацией, а документ — уставом.
-        Окончательная правовая форма, наименование и виды деятельности
-        проходят юридическую проверку до государственной регистрации.
+        {c.statusNote}
       </div>
 
       {/* Наследие — образ практики */}
@@ -83,9 +89,7 @@ export default function AssociationPage() {
       <section className="text-center">
         <Label>Миссия</Label>
         <p className="mx-auto max-w-[30em] font-serif text-[22px] leading-[1.5] text-paper">
-          Развивать традиционные искусства вне соревновательной модели спорта —
-          с уважением к происхождению школ, преемственности передачи и
-          безопасности практики.
+          {c.mission}
         </p>
       </section>
 
@@ -202,27 +206,24 @@ export default function AssociationPage() {
         <div className="mt-6 grid gap-6 sm:grid-cols-[200px_1fr] sm:items-start">
           <img
             src="/site/master-1.jpg"
-            alt="Акмал Тонг — основатель"
+            alt={`${c.founderName} — основатель`}
             className="w-full border border-gold-dim object-cover sm:aspect-[3/4]"
           />
           <div>
             <h3 className="font-serif text-[22px] font-bold text-paper">
-              Акмал Тонг
+              {c.founderName}
             </h3>
-            <p className="mt-1 text-[14px] text-gold-dim">
-              Школьное имя основателя · 28 лет практики
-            </p>
-            <p className="mt-4 text-[15px] leading-[1.65] text-paper-muted">
-              Базовая школа проекта — <span className="text-paper">KUNGFU MAN</span>:
-              авторская школа и профессиональный бренд основателя, а не синоним
-              Ассоциации. Направления основателя — Тайцзицюань, Нэйгун, Цигун,
-              традиционный Вин Чун, Джиткундо, дыхательно-двигательная работа и
-              культура структуры тела.
-            </p>
-            <p className="mt-3 text-[14px] leading-[1.6] text-paper-muted">
-              Коммерческая деятельность школы ведётся отдельно (ИП) и юридически
-              не смешивается с некоммерческой Ассоциацией.
-            </p>
+            <p className="mt-1 text-[14px] text-gold-dim">{c.founderMeta}</p>
+            {founderText.map((p, i) => (
+              <p
+                key={i}
+                className={`text-[15px] leading-[1.65] text-paper-muted ${
+                  i === 0 ? "mt-4" : "mt-3"
+                }`}
+              >
+                {p}
+              </p>
+            ))}
             <Link
               href="/master"
               className="mt-4 inline-block text-[14px] text-gold hover:underline"
@@ -276,11 +277,7 @@ export default function AssociationPage() {
       {/* Финальная оговорка */}
       <div className="mt-16 border-t border-ink-muted pt-8 text-center">
         <p className="mx-auto max-w-[36em] text-[13px] leading-[1.6] text-paper-muted">
-          Материал носит информационный характер и описывает проект будущей
-          организации. Он не утверждает наличие зарегистрированного
-          юридического статуса и не является публичной офертой. Практики
-          Ассоциации и школы — оздоровительные; они не заменяют медицинскую
-          помощь.
+          {c.finalNote}
         </p>
         <Link
           href="/"

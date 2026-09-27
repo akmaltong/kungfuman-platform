@@ -25,6 +25,7 @@ const STAFF_PREFIXES = [
   "/course-admin",
   "/blog-admin",
   "/leads",
+  "/site",
 ];
 const STUDENT_PREFIXES = [
   "/dashboard",

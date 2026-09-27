@@ -1,8 +1,14 @@
 import Link from "next/link";
 
+import { getContent } from "@/lib/queries/site-content";
+
 // Публичный лендинг школы. Дизайн-язык перенесён с сайта мастера:
 // узкая колонка, красная печать, serif-заголовки, тёплое золото на чёрном.
-export default function HomePage() {
+// Тексты первого экрана редактируются в кабинете (раздел «Сайт»).
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const c = await getContent("khujand", "home");
   return (
     <main className="mx-auto max-w-[640px] px-6">
       <header className="relative pb-10 pt-11">
@@ -13,15 +19,12 @@ export default function HomePage() {
         >
           功
         </div>
-        <p className="mb-2.5 text-[15px] text-gold">
-          Академия Kungfuman · Худжанд
-        </p>
+        <p className="mb-2.5 text-[15px] text-gold">{c.eyebrow}</p>
         <h1 className="mb-4 font-serif text-[40px] font-bold leading-[1.08] text-paper sm:text-[52px]">
-          Акмал Тонг
+          {c.name}
         </h1>
         <p className="max-w-[34em] font-serif text-[19px] leading-[1.6] text-paper-muted">
-          Боевые искусства, внутренние практики и восточная терапия. 28 лет
-          практики, 20 лет преподавания.
+          {c.tagline}
         </p>
       </header>
 
@@ -30,7 +33,7 @@ export default function HomePage() {
           href="/trial"
           className="inline-block rounded-sm bg-gold px-6 py-4 font-bold text-ink hover:bg-gold-soft"
         >
-          Записаться на пробное
+          {c.ctaLabel}
         </Link>
       </section>
 

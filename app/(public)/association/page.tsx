@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 
 export const metadata = {
@@ -63,6 +64,18 @@ export default function AssociationPage() {
         Окончательная правовая форма, наименование и виды деятельности
         проходят юридическую проверку до государственной регистрации.
       </div>
+
+      {/* Наследие — образ практики */}
+      <figure className="mt-14">
+        <img
+          src="/site/sila-1.jpg"
+          alt="Практика внутренних искусств"
+          className="aspect-[16/9] w-full border border-gold-dim object-cover"
+        />
+        <figcaption className="mt-3 text-center text-[12px] uppercase tracking-[0.28em] text-gold-dim">
+          Традиционные и внутренние искусства · культура движения
+        </figcaption>
+      </figure>
 
       <Rule />
 
@@ -179,6 +192,45 @@ export default function AssociationPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <Rule />
+
+      {/* Основатель и базовая школа */}
+      <section>
+        <Label>Основатель и базовая школа</Label>
+        <div className="mt-6 grid gap-6 sm:grid-cols-[200px_1fr] sm:items-start">
+          <img
+            src="/site/master-1.jpg"
+            alt="Акмал Тонг — основатель"
+            className="w-full border border-gold-dim object-cover sm:aspect-[3/4]"
+          />
+          <div>
+            <h3 className="font-serif text-[22px] font-bold text-paper">
+              Акмал Тонг
+            </h3>
+            <p className="mt-1 text-[14px] text-gold-dim">
+              Школьное имя основателя · 28 лет практики
+            </p>
+            <p className="mt-4 text-[15px] leading-[1.65] text-paper-muted">
+              Базовая школа проекта — <span className="text-paper">KUNGFU MAN</span>:
+              авторская школа и профессиональный бренд основателя, а не синоним
+              Ассоциации. Направления основателя — Тайцзицюань, Нэйгун, Цигун,
+              традиционный Вин Чун, Джиткундо, дыхательно-двигательная работа и
+              культура структуры тела.
+            </p>
+            <p className="mt-3 text-[14px] leading-[1.6] text-paper-muted">
+              Коммерческая деятельность школы ведётся отдельно (ИП) и юридически
+              не смешивается с некоммерческой Ассоциацией.
+            </p>
+            <Link
+              href="/master"
+              className="mt-4 inline-block text-[14px] text-gold hover:underline"
+            >
+              Подробнее о мастере →
+            </Link>
+          </div>
+        </div>
       </section>
 
       <Rule />

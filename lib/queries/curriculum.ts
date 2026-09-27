@@ -51,7 +51,7 @@ export async function getPublicProgram(
 
   const { data: levels } = await admin
     .from("levels")
-    .select("id, discipline_id, number, title")
+    .select("id, discipline_id, number, title, goals")
     .in("discipline_id", disciplineIds);
 
   const levelRows = (levels ?? []) as LevelRow[];

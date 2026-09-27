@@ -10,6 +10,7 @@ import {
   createProduct,
   deletePrice,
   deleteProduct,
+  updateProduct,
 } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ interface ProductRow {
   kind: string;
   slug: string;
   title: Localized;
+  description: Localized;
   sessions_included: number | null;
   duration_days: number | null;
   is_active: boolean;
@@ -44,7 +46,9 @@ export default async function ProductsPage() {
   const [{ data: products }, { data: prices }] = await Promise.all([
     supabase
       .from("products")
-      .select("id, kind, slug, title, sessions_included, duration_days, is_active"),
+      .select(
+        "id, kind, slug, title, description, sessions_included, duration_days, is_active",
+      ),
     supabase
       .from("product_prices")
       .select("id, product_id, currency, amount_minor, region"),
@@ -130,6 +134,70 @@ export default async function ProductsPage() {
                 </Button>
               </form>
             </div>
+
+            {/* Редактирование карточки (для витрины /prices) */}
+            <details className="mt-3">
+              <summary className="cursor-pointer text-sm text-gold hover:underline">
+                Редактировать текст
+              </summary>
+              <form
+                action={updateProduct}
+                className="mt-3 grid gap-2 sm:grid-cols-2"
+              >
+                <input type="hidden" name="id" value={product.id} />
+                <Input
+                  name="title_ru"
+                  defaultValue={product.title.ru ?? ""}
+                  placeholder="Название (ru)"
+                />
+                <Input
+                  name="title_tg"
+                  defaultValue={product.title.tg ?? ""}
+                  placeholder="Номи (tg)"
+                />
+                <Input
+                  name="title_en"
+                  defaultValue={product.title.en ?? ""}
+                  placeholder="Title (en)"
+                />
+                <div className="flex items-center gap-2">
+                  <Input
+                    name="sessions_included"
+                    type="number"
+                    min={1}
+                    defaultValue={product.sessions_included ?? ""}
+                    placeholder="занятий"
+                    className="flex-1"
+                  />
+                  <Input
+                    name="duration_days"
+                    type="number"
+                    min={1}
+                    defaultValue={product.duration_days ?? ""}
+                    placeholder="дней"
+                    className="w-24"
+                  />
+                </div>
+                <textarea
+                  name="description_ru"
+                  defaultValue={product.description?.ru ?? ""}
+                  placeholder="Описание для витрины (ru)"
+                  rows={2}
+                  className="rounded-md border border-ink-muted bg-ink px-3 py-1.5 text-sm text-neutral-100 sm:col-span-2"
+                />
+                <label className="flex items-center gap-2 text-sm text-neutral-300">
+                  <input
+                    type="checkbox"
+                    name="is_active"
+                    defaultChecked={product.is_active}
+                  />
+                  Показывать на сайте
+                </label>
+                <Button type="submit" variant="ghost">
+                  Сохранить
+                </Button>
+              </form>
+            </details>
 
             {/* Цены */}
             <ul className="mt-3 flex flex-wrap gap-2">

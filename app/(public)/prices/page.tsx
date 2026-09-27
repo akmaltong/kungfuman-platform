@@ -1,31 +1,59 @@
 import Link from "next/link";
 
+import { getPublicPricing, type PricedProduct } from "@/lib/queries/pricing";
+import { getLocale } from "@/lib/i18n/server";
+import { t } from "@/lib/i18n";
+import { PageHeader } from "@/components/public/page-header";
+
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Форматы и цены · Академия Kungfuman",
   description:
     "Групповые и персональные занятия, мини-группа на природе, семинары, ретрит, восточная терапия. Цены в сомони.",
 };
 
-type Row = { label: string; value: string };
+const KIND_LABEL: Record<string, string> = {
+  subscription: "Абонемент",
+  single_visit: "Разовое",
+  course: "Курс",
+  workshop: "Семинар / курс",
+  retreat: "Ретрит",
+};
+
+// Цена в минорных единицах → «500 сом.» (для TJS) или «500 TJS».
+function money(minor: number, currency: string): string {
+  const major = (minor / 100).toLocaleString("ru-RU", {
+    maximumFractionDigits: 2,
+  });
+  return `${major} ${currency === "TJS" ? "сом." : currency}`;
+}
+
+// Русское склонение: 1 занятие · 2 занятия · 5 занятий.
+function lessons(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  let word = "занятий";
+  if (mod10 === 1 && mod100 !== 11) word = "занятие";
+  else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20))
+    word = "занятия";
+  return `${n} ${word}`;
+}
+
 function Card({
-  title,
-  meta,
-  desc,
-  rows,
+  product,
   main,
+  locale,
 }: {
-  title: string;
-  meta: string;
-  desc?: string;
-  rows: Row[];
+  product: PricedProduct;
   main?: boolean;
+  locale: "ru" | "tg" | "en";
 }) {
+  const desc = t(product.description, locale);
   return (
     <div
       className={`relative border px-6 py-6 ${
-        main
-          ? "border-2 border-gold bg-ink-lacquer"
-          : "border-gold-dim bg-ink"
+        main ? "border-2 border-gold bg-ink-lacquer" : "border-gold-dim bg-ink"
       }`}
     >
       {main && (
@@ -33,104 +61,73 @@ function Card({
           Доступный старт
         </span>
       )}
-      <h3 className="font-serif text-[23px] font-bold text-paper">{title}</h3>
-      <p className="mt-1 text-[14px] text-paper-muted">{meta}</p>
-      {desc && (
-        <p className="mt-3 text-[15px] leading-[1.55] text-paper-muted">
-          {desc}
-        </p>
-      )}
-      <dl className="mt-4 space-y-2">
-        {rows.map((r) => (
-          <div
-            key={r.label}
-            className="flex items-baseline justify-between gap-3 border-t border-ink-muted pt-2"
-          >
-            <dt className="text-[15px] text-paper-muted">{r.label}</dt>
-            <dd className="font-serif text-[19px] font-bold text-gold">
-              {r.value}
-            </dd>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-serif text-[23px] font-bold text-paper">
+            {t(product.title, locale)}
+          </h3>
+          <p className="mt-1 text-[13px] uppercase tracking-[0.14em] text-gold-dim">
+            {KIND_LABEL[product.kind] ?? product.kind}
+            {product.kind === "subscription" && product.sessionsIncluded
+              ? ` · ${lessons(product.sessionsIncluded)}`
+              : ""}
+          </p>
+        </div>
+        {product.priceMinor != null && (
+          <div className="shrink-0 text-right">
+            <div className="font-serif text-[26px] font-bold text-gold">
+              {money(product.priceMinor, product.currency)}
+            </div>
+            {product.kind === "subscription" &&
+              product.perSessionMinor != null && (
+                <div className="text-[13px] text-paper-muted">
+                  ≈ {money(product.perSessionMinor, product.currency)} / занятие
+                </div>
+              )}
           </div>
-        ))}
-      </dl>
+        )}
+      </div>
+      {desc && (
+        <p className="mt-3 text-[15px] leading-[1.55] text-paper-muted">{desc}</p>
+      )}
     </div>
   );
 }
 
-export default function PricesPage() {
+export default async function PricesPage() {
+  const [products, locale] = await Promise.all([
+    getPublicPricing("khujand"),
+    getLocale(),
+  ]);
+
+  // «Доступный старт» — самый дешёвый абонемент.
+  const featuredId = products
+    .filter((p) => p.kind === "subscription" && p.priceMinor != null)
+    .sort((a, b) => (a.priceMinor ?? 0) - (b.priceMinor ?? 0))[0]?.id;
+
   return (
     <main className="mx-auto max-w-[680px] px-6 pb-20">
-      <header className="pt-10">
-        <p className="mb-3 text-[15px] text-gold">Академия Kungfuman · Худжанд</p>
-        <h1 className="font-serif text-[40px] font-bold leading-[1.05] text-paper sm:text-[48px]">
-          Форматы и цены
-        </h1>
-        <p className="mt-4 max-w-[36em] font-serif text-[19px] leading-[1.55] text-paper-muted">
-          От доступной открытой группы до персональных занятий, семинаров и
-          выездного ретрита. Живая передача практики от мастера.
-        </p>
-      </header>
+      <PageHeader
+        title="Форматы и цены"
+        subtitle="От доступной открытой группы до персональных занятий, семинаров и выездного ретрита. Живая передача практики от мастера."
+      />
 
-      <div className="mt-10 grid gap-5">
-        <Card
-          main
-          title="Открытая группа"
-          meta="60 минут · 2 раза в неделю · 8 занятий в месяц"
-          desc="Тайцзицюань, Цигун или Нэйгун в большой группе. Самый доступный способ начать практику с мастером."
-          rows={[
-            { label: "Абонемент · 8 занятий / мес", value: "500 сом." },
-            { label: "За занятие в абонементе", value: "62 сом." },
-            { label: "Разовое занятие", value: "150 сом." },
-          ]}
-        />
-        <Card
-          title="Мини-группа на природе"
-          meta="90 минут · до 4 человек · утро, открытый воздух"
-          desc="Тайцзицюань / Цигун / Вин Чун. Личное внимание, малый круг — то, чего нет в обычном зале."
-          rows={[
-            { label: "Абонемент · 8 занятий / мес", value: "1 200 сом." },
-            { label: "За занятие в абонементе", value: "150 сом." },
-            { label: "Разовое занятие", value: "200 сом." },
-          ]}
-        />
-        <Card
-          title="Персональные занятия"
-          meta="90 минут · один на один"
-          desc="Индивидуальная программа под вашу цель и состояние. Рекомендации для самостоятельной практики между встречами."
-          rows={[
-            { label: "В абонементе · от 5 занятий", value: "400 сом." },
-            { label: "Разовое занятие", value: "500 сом." },
-          ]}
-        />
-        <Card
-          title="Восточная терапия · Чжэнь Цзю"
-          meta="60 минут · иглотерапия и акупрессура"
-          desc="Работа с общим самочувствием, напряжением и восстановлением. Начинаем с диагностики состояния. Это оздоровительные практики, они не заменяют врача."
-          rows={[
-            { label: "Курс · диагностика + 3 сеанса", value: "900 сом." },
-            { label: "Разовый сеанс", value: "400 сом." },
-            { label: "Диагностика", value: "300 сом." },
-          ]}
-        />
-        <Card
-          title="Мастер-классы и семинары"
-          meta="с участника"
-          desc="Погружение в одно направление — от первого знакомства до системного дня практики."
-          rows={[
-            { label: "Мастер-класс · 90 минут", value: "150 сом." },
-            { label: "Семинар · 6 часов", value: "1 000 сом." },
-          ]}
-        />
-        <Card
-          title="Выездной ретрит"
-          meta="3 дня · на природе · всё включено"
-          desc="Интенсивное погружение: 6 часов практики в день, 18 часов итого. Тайцзи, Цигун, Нэйгун. Питание и проживание включены."
-          rows={[
-            { label: "Полный ретрит · 18 ч", value: "4 000 сом." },
-            { label: "За час практики", value: "350 сом./ч" },
-          ]}
-        />
-      </div>
+      {products.length === 0 ? (
+        <p className="mt-10 text-[16px] text-paper-muted">
+          Цены скоро появятся здесь.
+        </p>
+      ) : (
+        <div className="mt-10 grid gap-5">
+          {products.map((p) => (
+            <Card
+              key={p.id}
+              product={p}
+              main={p.id === featuredId}
+              locale={locale}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="mt-10 border-t border-ink-muted pt-9">
         <Link

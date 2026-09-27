@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PAGES, defaultsFor, type Field } from "@/lib/content/schema";
+import { ImageField } from "@/components/staff/image-field";
 import { saveContent } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -59,6 +60,9 @@ export default async function SitePage() {
 }
 
 function FieldInput({ field, value }: { field: Field; value: string }) {
+  if (field.type === "image") {
+    return <ImageField name={field.key} label={field.label} value={value} />;
+  }
   const rows =
     field.type === "text" ? 1 : field.type === "multiline" ? 4 : 6;
   return (

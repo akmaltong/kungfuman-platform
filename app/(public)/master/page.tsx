@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { getContent } from "@/lib/queries/site-content";
 import { toLines, toPairs } from "@/lib/content/schema";
+import { ContentImage } from "@/components/public/content-image";
 
 // «О мастере» — тексты редактируются в кабинете (раздел «Сайт»), хранятся в
 // schools.settings.content.master. Дефолты — в lib/content/schema.ts.
@@ -31,10 +32,10 @@ export default async function MasterPage() {
       {/* Hero */}
       <header className="pt-10">
         <p className="mb-4 text-[15px] text-gold">{c.eyebrow}</p>
-        <img
-          src="/site/master-1.jpg"
+        <ContentImage
+          value={c.heroImage}
           alt={c.name}
-          className="mb-7 w-full border border-gold-dim object-cover"
+          className="mb-7 aspect-[4/3] w-full border border-gold-dim"
         />
         <h1 className="font-serif text-[40px] font-bold leading-[1.05] text-paper sm:text-[52px]">
           {c.name}

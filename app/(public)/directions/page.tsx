@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 
 import { getContent } from "@/lib/queries/site-content";
 import { toPairs } from "@/lib/content/schema";
+import { ContentImage } from "@/components/public/content-image";
 
 // Тексты редактируются в кабинете (раздел «Сайт» → «Направления»).
 export const dynamic = "force-dynamic";
@@ -44,10 +44,10 @@ export default async function DirectionsPage() {
       </header>
 
       <section className="border-t border-ink-muted py-9">
-        <img
-          src="/site/sila-1.jpg"
+        <ContentImage
+          value={c.internalImage}
           alt={c.internalTitle}
-          className="mb-6 aspect-[16/9] w-full border border-gold-dim object-cover"
+          className="mb-6 aspect-[16/9] w-full border border-gold-dim"
         />
         <h2 className="font-serif text-[26px] font-bold text-gold">
           {c.internalTitle}
@@ -59,10 +59,10 @@ export default async function DirectionsPage() {
       </section>
 
       <section className="border-t border-ink-muted py-9">
-        <img
-          src="/site/edinoborstva-1.jpg"
+        <ContentImage
+          value={c.traditionalImage}
           alt={c.traditionalTitle}
-          className="mb-6 aspect-[16/9] w-full border border-gold-dim object-cover"
+          className="mb-6 aspect-[16/9] w-full border border-gold-dim"
         />
         <h2 className="font-serif text-[26px] font-bold text-gold">
           {c.traditionalTitle}
@@ -74,10 +74,10 @@ export default async function DirectionsPage() {
       </section>
 
       <section className="border-t border-ink-muted py-9">
-        <img
-          src="/site/terapiya-1.jpg"
+        <ContentImage
+          value={c.therapyImage}
           alt={c.therapyTitle}
-          className="mb-6 aspect-[16/9] w-full border border-gold-dim object-cover"
+          className="mb-6 aspect-[16/9] w-full border border-gold-dim"
         />
         <h2 className="font-serif text-[26px] font-bold text-gold">
           {c.therapyTitle}

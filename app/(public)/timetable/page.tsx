@@ -41,6 +41,7 @@ export default async function SchedulePage() {
             const time = g.slots[0]?.start;
             const dur = g.slots[0]?.dur;
             const days = sortDows(g.slots.map((s) => s.dow)).map(dowLabel);
+            const byArrangement = g.slots.length === 0;
             return (
               <div
                 key={g.id}
@@ -50,9 +51,13 @@ export default async function SchedulePage() {
                   <h2 className="font-serif text-[21px] font-bold text-paper">
                     {t(g.title, locale)}
                   </h2>
-                  {time && (
+                  {time ? (
                     <span className="font-serif text-[22px] font-bold text-gold">
                       {time}
+                    </span>
+                  ) : (
+                    <span className="text-[14px] font-medium uppercase tracking-[0.14em] text-gold-dim">
+                      Договорная
                     </span>
                   )}
                 </div>
@@ -60,22 +65,28 @@ export default async function SchedulePage() {
                   {t(g.discipline, locale)}
                   {t(g.venue, locale) ? ` · ${t(g.venue, locale)}` : ""}
                 </p>
-                {days.length > 0 && (
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    {days.map((d) => (
-                      <span
-                        key={d}
-                        className="border border-gold-dim px-3 py-1 text-[14px] text-paper"
-                      >
-                        {d}
-                      </span>
-                    ))}
-                    {dur && (
-                      <span className="text-[13px] text-paper-muted">
-                        · {dur} мин
-                      </span>
-                    )}
-                  </div>
+                {byArrangement ? (
+                  <p className="mt-4 text-[14px] text-paper-muted">
+                    Дни и время — по договорённости, по записи.
+                  </p>
+                ) : (
+                  days.length > 0 && (
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      {days.map((d) => (
+                        <span
+                          key={d}
+                          className="border border-gold-dim px-3 py-1 text-[14px] text-paper"
+                        >
+                          {d}
+                        </span>
+                      ))}
+                      {dur && (
+                        <span className="text-[13px] text-paper-muted">
+                          · {dur} мин
+                        </span>
+                      )}
+                    </div>
+                  )
                 )}
               </div>
             );

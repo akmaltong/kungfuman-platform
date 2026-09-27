@@ -28,12 +28,43 @@ export async function createProduct(formData: FormData) {
     duration_days: Number.isFinite(duration) && duration > 0 ? duration : null,
   });
   revalidatePath(PATH);
+  revalidatePath("/prices");
+}
+
+export async function updateProduct(formData: FormData) {
+  const { supabase } = await requireUser();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  // Заголовок ru/tg/en и описание ru — пустые языки не пишем.
+  const title: Record<string, string> = {};
+  for (const loc of ["ru", "tg", "en"] as const) {
+    const v = String(formData.get(`title_${loc}`) ?? "").trim();
+    if (v) title[loc] = v;
+  }
+  const descRu = String(formData.get("description_ru") ?? "").trim();
+  const sessions = Number(formData.get("sessions_included"));
+  const duration = Number(formData.get("duration_days"));
+
+  const patch: Record<string, unknown> = {
+    description: descRu ? { ru: descRu } : {},
+    sessions_included:
+      Number.isFinite(sessions) && sessions > 0 ? sessions : null,
+    duration_days: Number.isFinite(duration) && duration > 0 ? duration : null,
+    is_active: formData.get("is_active") != null,
+  };
+  if (Object.keys(title).length > 0) patch.title = title;
+
+  await supabase.from("products").update(patch).eq("id", id);
+  revalidatePath(PATH);
+  revalidatePath("/prices");
 }
 
 export async function deleteProduct(formData: FormData) {
   const { supabase } = await requireUser();
   await supabase.from("products").delete().eq("id", String(formData.get("id")));
   revalidatePath(PATH);
+  revalidatePath("/prices");
 }
 
 export async function addPrice(formData: FormData) {
@@ -55,6 +86,7 @@ export async function addPrice(formData: FormData) {
     { onConflict: "product_id,currency,region" },
   );
   revalidatePath(PATH);
+  revalidatePath("/prices");
 }
 
 export async function deletePrice(formData: FormData) {
@@ -64,4 +96,5 @@ export async function deletePrice(formData: FormData) {
     .delete()
     .eq("id", String(formData.get("id")));
   revalidatePath(PATH);
+  revalidatePath("/prices");
 }

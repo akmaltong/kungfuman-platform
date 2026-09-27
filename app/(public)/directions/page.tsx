@@ -1,22 +1,26 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 
+import { getContent } from "@/lib/queries/site-content";
+import { toPairs } from "@/lib/content/schema";
+
+// Тексты редактируются в кабинете (раздел «Сайт» → «Направления»).
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Направления · Академия Kungfuman",
   description:
     "Внутренние искусства (Тайцзицюань, Нэйгун, Цигун), традиционные системы (Вин Чун, Джиткундо) и восточная терапия Чжэнь Цзю.",
 };
 
-type Item = { name: string; desc: string };
-
-function List({ items }: { items: Item[] }) {
+function List({ items }: { items: [string, string][] }) {
   return (
     <ul className="mt-5 space-y-0">
-      {items.map((it) => (
-        <li key={it.name} className="border-b border-ink-muted py-4">
-          <b className="font-serif text-[20px] text-gold">{it.name}</b>
+      {items.map(([name, desc]) => (
+        <li key={name} className="border-b border-ink-muted py-4">
+          <b className="font-serif text-[20px] text-gold">{name}</b>
           <p className="mt-1 text-[16px] leading-[1.55] text-paper-muted">
-            {it.desc}
+            {desc}
           </p>
         </li>
       ))}
@@ -24,98 +28,68 @@ function List({ items }: { items: Item[] }) {
   );
 }
 
-export default function DirectionsPage() {
+export default async function DirectionsPage() {
+  const c = await getContent("khujand", "directions");
+
   return (
     <main className="mx-auto max-w-[680px] px-6 pb-20">
       <header className="pt-10">
-        <p className="mb-3 text-[15px] text-gold">Академия Kungfuman</p>
+        <p className="mb-3 text-[15px] text-gold">{c.eyebrow}</p>
         <h1 className="font-serif text-[40px] font-bold leading-[1.05] text-paper sm:text-[48px]">
-          Направления
+          {c.title}
         </h1>
         <p className="mt-4 max-w-[36em] font-serif text-[19px] leading-[1.55] text-paper-muted">
-          Внутренние искусства, традиционные системы движения и восточная
-          терапия. Язык практики — структура тела, дыхание, движение и
-          внимание.
+          {c.subtitle}
         </p>
       </header>
 
       <section className="border-t border-ink-muted py-9">
         <img
           src="/site/sila-1.jpg"
-          alt="Внутренние искусства"
+          alt={c.internalTitle}
           className="mb-6 aspect-[16/9] w-full border border-gold-dim object-cover"
         />
         <h2 className="font-serif text-[26px] font-bold text-gold">
-          Внутренние искусства
+          {c.internalTitle}
         </h2>
         <p className="mt-3 text-[16px] leading-[1.6] text-paper">
-          Работа со структурой тела, дыханием и расслаблением. Сила без
-          лишнего напряжения, устойчивость и внимание к себе.
+          {c.internalIntro}
         </p>
-        <List
-          items={[
-            {
-              name: "Тайцзицюань",
-              desc: "Гармония тела и разума: медленное точное движение, центр тяжести, координация и спокойная сила.",
-            },
-            {
-              name: "Нэйгун",
-              desc: "Древняя даосская внутренняя практика: структура, дыхание, управление напряжением и вниманием.",
-            },
-            {
-              name: "Цигун",
-              desc: "Дыхательно-двигательная работа: мягкие формы, дыхание и ощущение тела; в том числе оздоровительный цигун.",
-            },
-          ]}
-        />
+        <List items={toPairs(c.internalItems)} />
       </section>
 
       <section className="border-t border-ink-muted py-9">
         <img
           src="/site/edinoborstva-1.jpg"
-          alt="Традиционные системы"
+          alt={c.traditionalTitle}
           className="mb-6 aspect-[16/9] w-full border border-gold-dim object-cover"
         />
         <h2 className="font-serif text-[26px] font-bold text-gold">
-          Традиционные системы движения
+          {c.traditionalTitle}
         </h2>
         <p className="mt-3 text-[16px] leading-[1.6] text-paper">
-          Традиционные школы как культурное наследие — методология, техника и
-          дисциплина. Без спортивных соревнований и разрядов.
+          {c.traditionalIntro}
         </p>
-        <List
-          items={[
-            {
-              name: "Вин Чун",
-              desc: "Ближний бой и концентрация: чувствительность рук, линия, экономичное движение (традиция линии Ип Мана).",
-            },
-            {
-              name: "Джиткундо",
-              desc: "Система Брюса Ли: прямота, адаптивность, работа без лишних форм.",
-            },
-          ]}
-        />
+        <List items={toPairs(c.traditionalItems)} />
       </section>
 
       <section className="border-t border-ink-muted py-9">
         <img
           src="/site/terapiya-1.jpg"
-          alt="Восточная терапия"
+          alt={c.therapyTitle}
           className="mb-6 aspect-[16/9] w-full border border-gold-dim object-cover"
         />
         <h2 className="font-serif text-[26px] font-bold text-gold">
-          Восточная терапия · Чжэнь Цзю
+          {c.therapyTitle}
         </h2>
         <p className="mt-3 text-[16px] leading-[1.6] text-paper">
-          Традиционная китайская иглотерапия и акупрессура. Работа с общим
-          самочувствием, напряжением и восстановлением после нагрузок. Начинаем
-          с диагностики и разговора о состоянии.
+          {c.therapyIntro}
         </p>
-        <p className="mt-4 rounded-sm border-l-[3px] border-gold-dim bg-ink-lacquer px-4 py-3 text-[14px] leading-[1.5] text-paper-muted">
-          Это оздоровительные практики и не заменяют медицинскую помощь. Мы не
-          ставим диагнозов в медицинском смысле и не обещаем лечения — при
-          заболеваниях обращайтесь к врачу.
-        </p>
+        {c.therapyDisclaimer && (
+          <p className="mt-4 rounded-sm border-l-[3px] border-gold-dim bg-ink-lacquer px-4 py-3 text-[14px] leading-[1.5] text-paper-muted">
+            {c.therapyDisclaimer}
+          </p>
+        )}
       </section>
 
       <div className="border-t border-ink-muted pt-10">

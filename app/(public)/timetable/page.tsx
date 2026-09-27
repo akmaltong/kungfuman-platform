@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { getPublicSchedule } from "@/lib/queries/schedule";
+import { getContent } from "@/lib/queries/site-content";
 import { getLocale } from "@/lib/i18n/server";
 import { t } from "@/lib/i18n";
 import { dowLabel } from "@/lib/format";
@@ -20,17 +21,15 @@ function sortDows(dows: number[]): number[] {
 }
 
 export default async function SchedulePage() {
-  const [groups, locale] = await Promise.all([
+  const [groups, locale, c] = await Promise.all([
     getPublicSchedule("khujand"),
     getLocale(),
+    getContent("khujand", "timetable"),
   ]);
 
   return (
     <main className="mx-auto max-w-[680px] px-6 pb-20">
-      <PageHeader
-        title="Расписание"
-        subtitle="Занятия проходят на открытом воздухе: утро — у воды, вечер — в парке. Малые группы, живая передача практики от мастера."
-      />
+      <PageHeader title="Расписание" subtitle={c.subtitle} />
 
       {groups.length === 0 ? (
         <p className="mt-10 text-[16px] text-paper-muted">
@@ -92,8 +91,7 @@ export default async function SchedulePage() {
           Записаться на пробное
         </Link>
         <p className="mt-4 text-[14px] leading-[1.6] text-paper-muted">
-          Время и дни могут меняться по погоде и сезону — уточняйте перед первым
-          визитом. Форматы и цены —{" "}
+          {c.note} Форматы и цены —{" "}
           <Link href="/prices" className="text-gold hover:underline">
             на странице «Форматы»
           </Link>

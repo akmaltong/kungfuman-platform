@@ -3,7 +3,24 @@
 // пары — «левое | правое». Значение по умолчанию = текущий текст страницы,
 // поэтому до правки в кабинете сайт выглядит как раньше.
 
-export type FieldType = "text" | "multiline" | "list" | "pairs";
+export type FieldType = "text" | "multiline" | "list" | "pairs" | "image";
+
+// Изображение хранится строкой «url|posX|posY» (позиция фокуса в %, 0..100).
+export interface ImageValue {
+  url: string;
+  x: number;
+  y: number;
+}
+
+export function parseImage(raw: string | undefined): ImageValue {
+  const [url = "", xs, ys] = (raw ?? "").split("|");
+  const clamp = (n: number) => (Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 50);
+  return { url: url.trim(), x: clamp(Number(xs)), y: clamp(Number(ys)) };
+}
+
+export function encodeImage(v: ImageValue): string {
+  return `${v.url}|${Math.round(v.x)}|${Math.round(v.y)}`;
+}
 
 export interface Field {
   key: string;
@@ -47,6 +64,7 @@ export const PAGES: PageSpec[] = [
     title: "Главная",
     path: "/",
     fields: [
+      { key: "photo", label: "Фото мастера", type: "image", default: "/site/master-1.jpg|50|35" },
       { key: "eyebrow", label: "Надзаголовок", type: "text", default: "Академия Kungfuman · Худжанд" },
       { key: "name", label: "Заголовок (имя)", type: "text", default: "Акмал Тонг" },
       {
@@ -64,6 +82,7 @@ export const PAGES: PageSpec[] = [
     title: "О мастере",
     path: "/master",
     fields: [
+      { key: "heroImage", label: "Фото в шапке", type: "image", default: "/site/master-1.jpg|50|50" },
       { key: "eyebrow", label: "Надзаголовок", type: "text", default: "Академия Kungfuman · Худжанд" },
       { key: "name", label: "Имя", type: "text", default: "Акмал Тонг" },
       {
@@ -150,6 +169,7 @@ export const PAGES: PageSpec[] = [
         default:
           "Внутренние искусства, традиционные системы движения и восточная терапия. Язык практики — структура тела, дыхание, движение и внимание.",
       },
+      { key: "internalImage", label: "Внутренние: фото", type: "image", default: "/site/sila-1.jpg|50|50" },
       { key: "internalTitle", label: "Внутренние: заголовок", type: "text", default: "Внутренние искусства" },
       {
         key: "internalIntro",
@@ -165,6 +185,7 @@ export const PAGES: PageSpec[] = [
         default:
           "Тайцзицюань | Гармония тела и разума: медленное точное движение, центр тяжести, координация и спокойная сила.\nНэйгун | Древняя даосская внутренняя практика: структура, дыхание, управление напряжением и вниманием.\nЦигун | Дыхательно-двигательная работа: мягкие формы, дыхание и ощущение тела; в том числе оздоровительный цигун.",
       },
+      { key: "traditionalImage", label: "Традиционные: фото", type: "image", default: "/site/edinoborstva-1.jpg|50|50" },
       { key: "traditionalTitle", label: "Традиционные: заголовок", type: "text", default: "Традиционные системы движения" },
       {
         key: "traditionalIntro",
@@ -180,6 +201,7 @@ export const PAGES: PageSpec[] = [
         default:
           "Вин Чун | Ближний бой и концентрация: чувствительность рук, линия, экономичное движение (традиция линии Ип Мана).\nДжиткундо | Система Брюса Ли: прямота, адаптивность, работа без лишних форм.",
       },
+      { key: "therapyImage", label: "Терапия: фото", type: "image", default: "/site/terapiya-1.jpg|50|50" },
       { key: "therapyTitle", label: "Терапия: заголовок", type: "text", default: "Восточная терапия · Чжэнь Цзю" },
       {
         key: "therapyIntro",
@@ -204,6 +226,8 @@ export const PAGES: PageSpec[] = [
     fields: [
       { key: "eyebrow", label: "Надзаголовок", type: "text", default: "Институциональный уровень" },
       { key: "title", label: "Заголовок", type: "text", default: "Ассоциация традиционных и внутренних искусств" },
+      { key: "heritageImage", label: "Фото-наследие", type: "image", default: "/site/sila-1.jpg|50|50" },
+      { key: "founderImage", label: "Фото основателя", type: "image", default: "/site/master-1.jpg|50|50" },
       {
         key: "subtitle",
         label: "Подзаголовок",

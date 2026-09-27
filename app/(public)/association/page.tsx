@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 
 import { getContent } from "@/lib/queries/site-content";
+import { ContentImage } from "@/components/public/content-image";
 
 // Часть текстов редактируется в кабинете (раздел «Сайт» → «Ассоциация»);
 // структурные блоки (перечни, статусы, кодекс, архитектура) — в коде.
@@ -73,10 +73,10 @@ export default async function AssociationPage() {
 
       {/* Наследие — образ практики */}
       <figure className="mt-14">
-        <img
-          src="/site/sila-1.jpg"
+        <ContentImage
+          value={c.heritageImage}
           alt="Практика внутренних искусств"
-          className="aspect-[16/9] w-full border border-gold-dim object-cover"
+          className="aspect-[16/9] w-full border border-gold-dim"
         />
         <figcaption className="mt-3 text-center text-[12px] uppercase tracking-[0.28em] text-gold-dim">
           Традиционные и внутренние искусства · культура движения
@@ -204,10 +204,10 @@ export default async function AssociationPage() {
       <section>
         <Label>Основатель и базовая школа</Label>
         <div className="mt-6 grid gap-6 sm:grid-cols-[200px_1fr] sm:items-start">
-          <img
-            src="/site/master-1.jpg"
+          <ContentImage
+            value={c.founderImage}
             alt={`${c.founderName} — основатель`}
-            className="w-full border border-gold-dim object-cover sm:aspect-[3/4]"
+            className="w-full border border-gold-dim sm:aspect-[3/4]"
           />
           <div>
             <h3 className="font-serif text-[22px] font-bold text-paper">

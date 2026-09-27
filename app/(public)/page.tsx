@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 import { getContent } from "@/lib/queries/site-content";
+import { ContentImage } from "@/components/public/content-image";
 
 // Публичный лендинг школы. Дизайн-язык перенесён с сайта мастера:
-// узкая колонка, красная печать, serif-заголовки, тёплое золото на чёрном.
-// Тексты первого экрана редактируются в кабинете (раздел «Сайт»).
+// узкая колонка, serif-заголовки, тёплое золото на чёрном.
+// Тексты и фото первого экрана редактируются в кабинете (раздел «Сайт»).
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
@@ -12,13 +13,11 @@ export default async function HomePage() {
   return (
     <main className="mx-auto max-w-[640px] px-6">
       <header className="relative pb-10 pt-11">
-        <div
-          aria-hidden
-          style={{ transform: "rotate(-4deg)" }}
-          className="mb-7 grid h-[84px] w-[84px] place-items-center rounded-md bg-seal font-serif text-[46px] leading-none text-[#f6e9dc] shadow-[inset_0_0_0_5px_rgba(246,233,220,0.33)]"
-        >
-          功
-        </div>
+        <ContentImage
+          value={c.photo}
+          alt={c.name}
+          className="mb-7 aspect-[4/3] w-full border border-gold-dim"
+        />
         <p className="mb-2.5 text-[15px] text-gold">{c.eyebrow}</p>
         <h1 className="mb-4 font-serif text-[40px] font-bold leading-[1.08] text-paper sm:text-[52px]">
           {c.name}

@@ -243,6 +243,27 @@ export const PAGES: PageSpec[] = [
       },
     ],
   },
+  {
+    key: "timetable",
+    title: "Расписание",
+    path: "/timetable",
+    fields: [
+      {
+        key: "subtitle",
+        label: "Подзаголовок",
+        type: "multiline",
+        default:
+          "Занятия на открытом воздухе, у воды. Малые группы, живая передача практики от мастера.",
+      },
+      {
+        key: "note",
+        label: "Примечание внизу",
+        type: "multiline",
+        default:
+          "Пока занятия проходят только по утрам. Остальные форматы и время — по договорённости; расписание будет расширяться. Дни и время могут меняться по погоде и сезону — уточняйте перед первым визитом.",
+      },
+    ],
+  },
 ];
 
 export function getPage(key: string): PageSpec | undefined {
